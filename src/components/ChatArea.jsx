@@ -2,16 +2,41 @@ import { useState, useEffect } from "react";
 
 function ChatArea() {
   const [chats, setChats] = useState({});
+  const [page, setPage] = useState(20);
+
   const fetchApi = async () => {
-    let result = await fetch("https://qa.corider.in/assignment/chat?page=0");
+    let result = await fetch(
+      `https://qa.corider.in/assignment/chat?${page}`
+    );
     result = await result.json();
+
     setChats(result.chats);
+    setChats((prev) => [...prev, ...result.chats]);
     console.log(chats);
+    window.scrollTo(0, document.body.scrollHeight);
   };
 
   useEffect(() => {
     fetchApi();
-  },[]);
+  }, [ page]);
+
+  const handleInfiniteScroll = () => {
+    try {
+      if (
+        window.innerHeight + document.documentElement.scrollTop + 1 >=
+        document.documentElement.scrollHeight
+      ) {
+        setPage((prev) => prev + 1);
+      }
+    } catch {}
+  };
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleInfiniteScroll);
+    return () => {
+      window.removeEventListener("scroll", handleInfiniteScroll);
+    };
+  }, []);
 
   return (
     <>

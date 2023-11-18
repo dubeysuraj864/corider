@@ -4,21 +4,23 @@ function ChatArea() {
   const [chats, setChats] = useState({});
   const [page, setPage] = useState(20);
 
-  const fetchApi = async () => {
-    let result = await fetch(
-      `https://qa.corider.in/assignment/chat?${page}`
-    );
-    result = await result.json();
 
-    setChats(result.chats);
-    setChats((prev) => [...prev, ...result.chats]);
-    console.log(chats);
-    window.scrollTo(0, document.body.scrollHeight);
-  };
 
   useEffect(() => {
+    const fetchApi = async () => {
+      let result = await fetch(
+        `https://qa.corider.in/assignment/chat?${page}`
+      );
+      result = await result.json();
+  
+      setChats(result.chats);
+      setChats((prev) => [...prev, ...result.chats]);
+      console.log(chats);
+      window.scrollTo(0, document.body.scrollHeight);
+    };
     fetchApi();
-  }, [ page]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[]);
 
   const handleInfiniteScroll = () => {
     try {
@@ -36,11 +38,11 @@ function ChatArea() {
     return () => {
       window.removeEventListener("scroll", handleInfiniteScroll);
     };
-  }, []);
+  }, [page]);
 
   return (
     <>
-      <div className="chat-area h-[75vh] overflow-auto px-4 py-10">
+      <div className="chat-area h-[75vh] overflow-auto -z-10 px-4 py-10">
         {chats.length > 0
           ? chats.map((item, index) => {
               return (
@@ -54,7 +56,7 @@ function ChatArea() {
                       />
                       <li
                         id="no-self"
-                        className="bg-gray-200 p-4 rounded-t-xl float-left w-[80%] rounded-br-xl"
+                        className="bg-gray-200 p-4 rounded-t-xl border float-left w-[80%] rounded-br-xl"
                       >
                         {item.message}
                       </li>
@@ -63,7 +65,7 @@ function ChatArea() {
                     <span className="my-4 flex flex-row-reverse ">
                       <li
                         id="no-self"
-                        className="bg-blue-500 p-4 rounded-t-xl my-4 rounded-bl-xl w-[80%] float-right"
+                        className="bg-blue-500 border text-white p-4 rounded-t-xl my-4 rounded-bl-xl w-[80%] float-right"
                       >
                         {item.message}
                       </li>
